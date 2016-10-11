@@ -6,6 +6,7 @@ import java.util.Arrays;
 public class Calculator {
 
 	private static String splitter = ",|\\n";
+	private static int MAX_VALUE = 1001;
 	
 
 	public static int add(String text){
@@ -73,7 +74,9 @@ public class Calculator {
 	private static int sum(String[] numbers){
 		int sumTotal = 0;
 		for(String number : numbers){
-			sumTotal += toInt(number);
+			if(toInt(number) < MAX_VALUE){
+				sumTotal += toInt(number);
+			}
 		}
 
 		return sumTotal;
