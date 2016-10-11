@@ -9,5 +9,8 @@ public class CalculatorTest {
       org.junit.runner.JUnitCore.main("is.ru.stringcalculator.CalculatorTest");
     }
 
-    
+    @Test
+    public void testEmptyString(){
+    	assertEquals(0, Calculator.add(""));
+    }
 }
