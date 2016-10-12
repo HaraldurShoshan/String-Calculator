@@ -2,83 +2,91 @@ package is.ru.stringcalculator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class Calculator {
 
-	private static String splitter = ",|\\n";
-	private static int MAX_VALUE = 1001;
-	
+    private static int MAX_VALUE = 1001;
 
-	public static int add(String text){
-		ArrayList<Integer> negativeNumbers = new ArrayList<Integer>();
-		
-		if(!text.equals("")){
-			String[] myNumbers  = splitNumbers(text);
-			addToArray(myNumbers, negativeNumbers);
-		}
-		
+    public static int add(String text){
+        ArrayList<Integer> negativeNumbers = new ArrayList<Integer>();
 
-		if(negativeNumbers.size() > 0){
-			String negNumbers = createNegativeString(negativeNumbers);
+        if(!text.equals("")){
+            String[] myNumbers  = splitNumbers(text);
+            addToArray(myNumbers, negativeNumbers);
+        }
 
-			throw new IllegalArgumentException("Negatives not allowed: " + negNumbers);
-		}
-	
-		if(text.equals("")){
-			return 0;
-		}else if(text.contains(",") || text.contains("\n")){
-			return sum(splitNumbers(text));
-		}else{
-			return toInt(text);
-		}
+        if(negativeNumbers.size() > 0){
+            String negNumbers = createNegativeString(negativeNumbers);
+            throw new IllegalArgumentException("Negatives not allowed: " + negNumbers);
+        }
 
-	}
+        if(text.equals("")){
+            return 0;
+        }else if(text.startsWith("//") || text.contains(",") || text.contains("\n")){
+            return sum(splitNumbers(text));
+        }else{
+            return toInt(text);
+        }
+    }
 
-	private static int toInt(String number){
-		return Integer.parseInt(number);
-	}
+    private static int toInt(String number){
+        return Integer.parseInt(number);
+    }
 
-	private static String[] splitNumbers(String numbers){
+    private static String[] splitNumbers(String numbers){
+        String splitter = ",|\\n";
 
-		return numbers.split(splitter);
-	}
+        if(numbers.startsWith("//")){
+            numbers = numbers.replace("\n", "]");
 
-	private static void addToArray(String[] numbers, ArrayList<Integer> negativeNumbers){
-		for(String number : numbers){
-			int x = toInt(number);			
-			if(x < 0){
-				negativeNumbers.add(x);
-			}
-			
-		}
-	}
+            String delim = "";
+            Matcher m = Pattern.compile("\\//(.*?)\\]").matcher(numbers);
+            while(m.find()) {
+                delim = m.group(1);
+            }
 
-	private static String createNegativeString(ArrayList<Integer> negativeNumbers){
-		String finalString = "";
-		int count = 0;
+            String result = numbers.substring(numbers.lastIndexOf("]") + 1);
+            splitter = splitter + "|" + delim;
 
-		for(Integer num : negativeNumbers){
-			String x = Integer.toString(num);
+            return result.split(splitter);
+        }else{
+            return numbers.split(splitter);
+        }
+    }
 
-			if(count == 0){
-				finalString = x;
-				count++;
-			}else{
-				finalString = finalString + "," + x;
-			}
-		}
+    private static void addToArray(String[] numbers, ArrayList<Integer> negativeNumbers){
+        for(String number : numbers){
+            int x = toInt(number);
+            if(x < 0){
+                negativeNumbers.add(x);
+            }
+        }
+    }
 
-		return finalString;
-	}
+    private static String createNegativeString(ArrayList<Integer> negativeNumbers){
+        String finalString = "";
 
-	private static int sum(String[] numbers){
-		int sumTotal = 0;
-		for(String number : numbers){
-			if(toInt(number) < MAX_VALUE){
-				sumTotal += toInt(number);
-			}
-		}
+        for(Integer num : negativeNumbers){
+            String x = Integer.toString(num);
 
-		return sumTotal;
-	}
+            if(finalString.equals("")){
+                finalString = x;
+            }else{
+                finalString = finalString + "," + x;
+            }
+        }
+        return finalString;
+    }
+
+    private static int sum(String[] numbers){
+        int sumTotal = 0;
+        for(String number : numbers){
+            if(toInt(number) < MAX_VALUE){
+                sumTotal += toInt(number);
+            }
+        }
+        return sumTotal;
+    }
 }

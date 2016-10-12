@@ -59,4 +59,14 @@ public class CalculatorTest {
     	assertEquals(2, Calculator.add("1001,2"));
     }
 
+    @Test
+    public void testDifferentDelim(){
+    	assertEquals(3, Calculator.add("//;\n1;2"));
+    }
+
+     @Test
+    public void testDifferentDelim2(){
+    	assertEquals(3, Calculator.add("//;;;\n1;;;2"));
+    }
+
 }
